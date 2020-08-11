@@ -1,13 +1,13 @@
-This repository contains a collection of stand-alone assignments for embedded 
+This repository contains a collection of stand-alone assignments for embedded
 cryptographic engineering courses that we have been using at Radboud University
-and Academia Sinica. 
+and Academia Sinica.
 
-Parts of the code have been shamelessly copied from pqm4 and Joost Rijneveld's 
+Parts of the code have been shamelessly copied from pqm4 and Joost Rijneveld's
 STM32-getting-started.
 
-**Warning**: Some of the code in this repository is not constant-time. It is 
-usually part of the assignment to eliminate all timing leaks in addition to 
-optimizing the scheme. 
+**Warning**: Some of the code in this repository is not constant-time. It is
+usually part of the assignment to eliminate all timing leaks in addition to
+optimizing the scheme.
 
 
 # Getting Started
@@ -16,10 +16,11 @@ optimizing the scheme.
 # Reference Cycle Counts
 
 The following table contains the cycle counts when using arm-none-eabi-gcc `10.2.0`.
-Be aware that cycle counts (esp. for reference code) vary significantly between 
-compiler versions. Most of the times #newisalwaysbetter.  
+Be aware that cycle counts (esp. for reference code) vary significantly between
+compiler versions. Most of the times #newisalwaysbetter.
 
 
-| scheme                | cycle count | 
-| --------------------- | ----------- | 
-| chacha20 (1024 bytes) | 33586       |  
+| scheme                | cycle count |
+| --------------------- | ----------- |
+| chacha20 (1024 bytes) | 33586       |
+| poly1305 (512 bytes)  | 125331      |
