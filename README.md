@@ -26,3 +26,5 @@ compiler versions. Most of the times #newisalwaysbetter.
 | poly1305 (512 bytes)         | 125331      |
 | ecdh25519 (scalarmult_base)  | 50117722    |
 | ecdh25519 (scalarmult)       | 46689841    |
+| sha256 (1024 bytes)          | 47803       |
+| sha512 (1024 bytes)          | 123563      |
