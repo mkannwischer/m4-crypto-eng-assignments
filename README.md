@@ -28,3 +28,5 @@ compiler versions. Most of the times #newisalwaysbetter.
 | ecdh25519 (scalarmult)       | 46689841    |
 | sha256 (1024 bytes)          | 47803       |
 | sha512 (1024 bytes)          | 123563      |
+| aes128encrypt (16 bytes)     | 943758      |
+| aes256encrypt (16 bytes)     | 1302441     |

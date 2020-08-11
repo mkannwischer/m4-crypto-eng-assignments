@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include "aes128encrypt.h"
+#include "hal.h"
+
+
+const unsigned char in[CRYPTO_INPUTBYTES] = {
+  0x54, 0x68, 0x65, 0x20, 0x71, 0x75, 0x69, 0x63, 0x6b, 0x20, 0x62, 0x72, 0x6f,
+  0x77, 0x6e, 0x20
+};
+
+const unsigned char key[CRYPTO_KEYBYTES] = {
+  0x66, 0xd9, 0xb7, 0x60, 0x0e, 0xda, 0xaa, 0x81, 0x42, 0xa2, 0xd6, 0x3d, 0x8f,
+  0x51, 0x6c, 0x6f };
+
+const unsigned char cmp[CRYPTO_OUTPUTBYTES] = {
+  0x10, 0xdc, 0x43, 0x2b, 0x15, 0x11, 0x81, 0x36, 0x3f, 0x00, 0x51, 0x74, 0x81,
+  0x7c, 0x22, 0x87,
+};
+
+int main(void)
+{
+  unsigned char out[CRYPTO_OUTPUTBYTES];
+  hal_setup(CLOCK_FAST);
+
+
+  hal_send_str("\n============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
+  aes128encrypt(out, in, key);
+
+  int i;
+  for(i=0;i<CRYPTO_OUTPUTBYTES;i++)
+  {
+    if(cmp[i] != out[i])
+    {
+      hal_send_str("Test failed!\n");
+      while(1);
+      return -1;
+    }
+  }
+
+  hal_send_str("Test successful!\n");
+
+  while(1);
+  return 0;
+}
