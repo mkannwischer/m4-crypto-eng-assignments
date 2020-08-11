@@ -20,7 +20,9 @@ Be aware that cycle counts (esp. for reference code) vary significantly between
 compiler versions. Most of the times #newisalwaysbetter.
 
 
-| scheme                | cycle count |
-| --------------------- | ----------- |
-| chacha20 (1024 bytes) | 33586       |
-| poly1305 (512 bytes)  | 125331      |
+| scheme                       | cycle count |
+| ---------------------------- | ----------- |
+| chacha20 (1024 bytes)        | 33586       |
+| poly1305 (512 bytes)         | 125331      |
+| ecdh25519 (scalarmult_base)  | 50117722    |
+| ecdh25519 (scalarmult)       | 46689841    |
