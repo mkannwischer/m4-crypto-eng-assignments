@@ -1,25 +1,20 @@
 #include <stdio.h>
 #include "fe25519.h"
 
-#if 0
-#define WINDOWSIZE 1 /* Should be 1,2, or 4 */
-#define WINDOWMASK ((1<<WINDOWSIZE)-1)
-#endif
-
 const fe25519 fe25519_zero = {{0}};
 const fe25519 fe25519_one  = {{1}};
 const fe25519 fe25519_two  = {{2}};
 
 /* sqrt(-1) */
-const fe25519 fe25519_sqrtm1 = {{0xB0, 0xA0, 0x0E, 0x4A, 0x27, 0x1B, 0xEE, 0xC4, 0x78, 0xE4, 0x2F, 0xAD, 0x06, 0x18, 0x43, 0x2F, 
+const fe25519 fe25519_sqrtm1 = {{0xB0, 0xA0, 0x0E, 0x4A, 0x27, 0x1B, 0xEE, 0xC4, 0x78, 0xE4, 0x2F, 0xAD, 0x06, 0x18, 0x43, 0x2F,
                                  0xA7, 0xD7, 0xFB, 0x3D, 0x99, 0x00, 0x4D, 0x2B, 0x0B, 0xDF, 0xC1, 0x4F, 0x80, 0x24, 0x83, 0x2B}};
 
 /* -sqrt(-1) */
-const fe25519 fe25519_msqrtm1 = {{0x3D, 0x5F, 0xF1, 0xB5, 0xD8, 0xE4, 0x11, 0x3B, 0x87, 0x1B, 0xD0, 0x52, 0xF9, 0xE7, 0xBC, 0xD0, 
+const fe25519 fe25519_msqrtm1 = {{0x3D, 0x5F, 0xF1, 0xB5, 0xD8, 0xE4, 0x11, 0x3B, 0x87, 0x1B, 0xD0, 0x52, 0xF9, 0xE7, 0xBC, 0xD0,
                                   0x58, 0x28, 0x4, 0xC2, 0x66, 0xFF, 0xB2, 0xD4, 0xF4, 0x20, 0x3E, 0xB0, 0x7F, 0xDB, 0x7C, 0x54}};
 
 /* -1 */
-const fe25519 fe25519_m1 = {{236, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+const fe25519 fe25519_m1 = {{236, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f}};
 
 
@@ -92,7 +87,7 @@ static void reduce_mul(fe25519 *r)
 }
 
 /* reduction modulo 2^255-19 */
-void fe25519_freeze(fe25519 *r) 
+void fe25519_freeze(fe25519 *r)
 {
   int i;
   uint32_t m = equal(r->v[31],127);
@@ -121,7 +116,7 @@ void fe25519_pack(unsigned char r[32], const fe25519 *x)
   int i;
   fe25519 y = *x;
   fe25519_freeze(&y);
-  for(i=0;i<32;i++) 
+  for(i=0;i<32;i++)
     r[i] = y.v[i];
 }
 
@@ -139,7 +134,7 @@ int fe25519_isone(const fe25519 *x)
 int fe25519_isnegative(const fe25519 *x)
 {
   fe25519 t = *x;
-  
+
   fe25519_freeze(&t);
 
   return t.v[0] & 1;
@@ -206,7 +201,7 @@ void fe25519_mul(fe25519 *r, const fe25519 *x, const fe25519 *y)
       t[i+j] += x->v[i] * y->v[j];
 
   for(i=32;i<63;i++)
-    r->v[i-32] = t[i-32] + times38(t[i]); 
+    r->v[i-32] = t[i-32] + times38(t[i]);
   r->v[31] = t[31]; /* result now in r[0]...r[31] */
 
   reduce_mul(r);
@@ -216,75 +211,6 @@ void fe25519_square(fe25519 *r, const fe25519 *x)
 {
   fe25519_mul(r, x, x);
 }
-
-#if 0
-void fe25519_invert(fe25519 *r, const fe25519 *x)
-{
-	fe25519 z2;
-	fe25519 z9;
-	fe25519 z11;
-	fe25519 z2_5_0;
-	fe25519 z2_10_0;
-	fe25519 z2_20_0;
-	fe25519 z2_50_0;
-	fe25519 z2_100_0;
-	fe25519 t0;
-	fe25519 t1;
-	int i;
-	
-	/* 2 */ fe25519_square(&z2,x);
-	/* 4 */ fe25519_square(&t1,&z2);
-	/* 8 */ fe25519_square(&t0,&t1);
-	/* 9 */ fe25519_mul(&z9,&t0,x);
-	/* 11 */ fe25519_mul(&z11,&z9,&z2);
-	/* 22 */ fe25519_square(&t0,&z11);
-	/* 2^5 - 2^0 = 31 */ fe25519_mul(&z2_5_0,&t0,&z9);
-
-	/* 2^6 - 2^1 */ fe25519_square(&t0,&z2_5_0);
-	/* 2^7 - 2^2 */ fe25519_square(&t1,&t0);
-	/* 2^8 - 2^3 */ fe25519_square(&t0,&t1);
-	/* 2^9 - 2^4 */ fe25519_square(&t1,&t0);
-	/* 2^10 - 2^5 */ fe25519_square(&t0,&t1);
-	/* 2^10 - 2^0 */ fe25519_mul(&z2_10_0,&t0,&z2_5_0);
-
-	/* 2^11 - 2^1 */ fe25519_square(&t0,&z2_10_0);
-	/* 2^12 - 2^2 */ fe25519_square(&t1,&t0);
-	/* 2^20 - 2^10 */ for (i = 2;i < 10;i += 2) { fe25519_square(&t0,&t1); fe25519_square(&t1,&t0); }
-	/* 2^20 - 2^0 */ fe25519_mul(&z2_20_0,&t1,&z2_10_0);
-
-	/* 2^21 - 2^1 */ fe25519_square(&t0,&z2_20_0);
-	/* 2^22 - 2^2 */ fe25519_square(&t1,&t0);
-	/* 2^40 - 2^20 */ for (i = 2;i < 20;i += 2) { fe25519_square(&t0,&t1); fe25519_square(&t1,&t0); }
-	/* 2^40 - 2^0 */ fe25519_mul(&t0,&t1,&z2_20_0);
-
-	/* 2^41 - 2^1 */ fe25519_square(&t1,&t0);
-	/* 2^42 - 2^2 */ fe25519_square(&t0,&t1);
-	/* 2^50 - 2^10 */ for (i = 2;i < 10;i += 2) { fe25519_square(&t1,&t0); fe25519_square(&t0,&t1); }
-	/* 2^50 - 2^0 */ fe25519_mul(&z2_50_0,&t0,&z2_10_0);
-
-	/* 2^51 - 2^1 */ fe25519_square(&t0,&z2_50_0);
-	/* 2^52 - 2^2 */ fe25519_square(&t1,&t0);
-	/* 2^100 - 2^50 */ for (i = 2;i < 50;i += 2) { fe25519_square(&t0,&t1); fe25519_square(&t1,&t0); }
-	/* 2^100 - 2^0 */ fe25519_mul(&z2_100_0,&t1,&z2_50_0);
-
-	/* 2^101 - 2^1 */ fe25519_square(&t1,&z2_100_0);
-	/* 2^102 - 2^2 */ fe25519_square(&t0,&t1);
-	/* 2^200 - 2^100 */ for (i = 2;i < 100;i += 2) { fe25519_square(&t1,&t0); fe25519_square(&t0,&t1); }
-	/* 2^200 - 2^0 */ fe25519_mul(&t1,&t0,&z2_100_0);
-
-	/* 2^201 - 2^1 */ fe25519_square(&t0,&t1);
-	/* 2^202 - 2^2 */ fe25519_square(&t1,&t0);
-	/* 2^250 - 2^50 */ for (i = 2;i < 50;i += 2) { fe25519_square(&t0,&t1); fe25519_square(&t1,&t0); }
-	/* 2^250 - 2^0 */ fe25519_mul(&t0,&t1,&z2_50_0);
-
-	/* 2^251 - 2^1 */ fe25519_square(&t1,&t0);
-	/* 2^252 - 2^2 */ fe25519_square(&t0,&t1);
-	/* 2^253 - 2^3 */ fe25519_square(&t1,&t0);
-	/* 2^254 - 2^4 */ fe25519_square(&t0,&t1);
-	/* 2^255 - 2^5 */ fe25519_square(&t1,&t0);
-	/* 2^255 - 21 */ fe25519_mul(r,&t1,&z11);
-}
-#endif
 
 void fe25519_pow2523(fe25519 *r, const fe25519 *x)
 {
@@ -298,7 +224,7 @@ void fe25519_pow2523(fe25519 *r, const fe25519 *x)
 	fe25519 z2_100_0;
 	fe25519 t;
 	int i;
-		
+
 	/* 2 */ fe25519_square(&z2,x);
 	/* 4 */ fe25519_square(&t,&z2);
 	/* 8 */ fe25519_square(&t,&t);
