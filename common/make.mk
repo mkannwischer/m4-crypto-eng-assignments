@@ -9,6 +9,9 @@ OBJDUMP	= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
 OPENCM3_DIR = ../libopencm3
 
+
+ARCH_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+
 CFLAGS		+= -O3 \
 		   -Wall -Wextra -Wimplicit-function-declaration \
 		   -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes \
@@ -41,6 +44,9 @@ lib:
 	$(LD) -o $(*).elf $(*).o $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
 %.o: %.c lib
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+%.o: %.S lib
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
