@@ -7,7 +7,8 @@ OBJS       = ../common/hal-stm32f4.o
 all: polymultest_stupid.bin polymultest_smlaldx.bin polymultest_polymul768.bin \
      polymultest_polymul_768x768_bar_T4_B48.bin \
 	 polymultest_polymul_768x768_bar_T6_B64.bin \
-	 polymultest_polymul_768x768_bar_B48.bin
+	 polymultest_polymul_768x768_bar_B48.bin \
+	 polymultest_polymul_768x768.bin
 
 
 .PRECIOUS: polymultest_%.elf
